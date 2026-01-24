@@ -7,40 +7,33 @@
 void fcfs_schedule(Process p[], int n)
 {
     int current_time = 0;
-    int completed = 0;
 
-    while (completed < n)
+    for (int i = 0; i < n - 1; i++)
     {
-        int idx = -1;
-        int min_arrival = 999999;
-
-        for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++)
         {
-            if (!p[i].completed)
+            if (p[j].arrival_time < p[i].arrival_time ||
+               (p[j].arrival_time == p[i].arrival_time &&
+                p[j].id < p[i].id))
             {
-                if (p[i].arrival_time < min_arrival)
-                {
-                    min_arrival = p[i].arrival_time;
-                    idx = i;
-                }
-                else if (p[i].arrival_time == min_arrival &&
-                         p[i].id < p[idx].id)
-                {
-                    idx = i;
-                }
+                Process temp = p[i];
+                p[i] = p[j];
+                p[j] = temp;
             }
         }
+    }
 
-        if (current_time < p[idx].arrival_time)
-            current_time = p[idx].arrival_time;
+    /* Calcular tiempos en orden FCFS */
+    for (int i = 0; i < n; i++)
+    {
+        if (current_time < p[i].arrival_time)
+            current_time = p[i].arrival_time;
 
-        p[idx].waiting_time = current_time - p[idx].arrival_time;
-        p[idx].turnaround_time = p[idx].waiting_time + p[idx].burst_time;
+        p[i].waiting_time = current_time - p[i].arrival_time;
+        p[i].turnaround_time = p[i].waiting_time + p[i].burst_time;
 
-        current_time += p[idx].burst_time;
-
-        p[idx].completed = 1;
-        completed++;
+        current_time += p[i].burst_time;
+        p[i].completed = 1;
     }
 }
 
