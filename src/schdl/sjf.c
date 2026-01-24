@@ -9,11 +9,14 @@ void sjf_schedule(Process p[], int n)
     int current_time = 0;
     int completed = 0;
 
+    Process ordered[n];  
+
     while (completed < n)
     {
         int idx = -1;
         int min_burst = 999999;
 
+      
         for (int i = 0; i < n; i++)
         {
             if (!p[i].completed && p[i].arrival_time <= current_time)
@@ -35,18 +38,28 @@ void sjf_schedule(Process p[], int n)
             }
         }
 
+      
         if (idx == -1)
         {
             current_time++;
             continue;
         }
 
+       
         p[idx].waiting_time = current_time - p[idx].arrival_time;
-        p[idx].turnaround_time = p[idx].waiting_time + p[idx].burst_time;
+        p[idx].turnaround_time =
+            p[idx].waiting_time + p[idx].burst_time;
 
         current_time += p[idx].burst_time;
         p[idx].completed = 1;
+
+        ordered[completed] = p[idx];
         completed++;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        p[i] = ordered[i];
     }
 }
 
